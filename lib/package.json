@@ -1,0 +1,8 @@
+{
+  "name": "assets",
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.15.1",
+    "@ibm/plex": "^5.1.0",
+    "bootstrap": "^4.5.2"
+  }
+}
