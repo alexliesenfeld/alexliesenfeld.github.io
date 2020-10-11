@@ -1,5 +1,9 @@
 {
   "name": "assets",
+  "scripts": {
+    "build": "rm -rf dist && npm install && mkdir dist && cp -R node_modules dist/ && cp index.html dist/ && cp -R images dist/",
+    "minimize-build": "rm -r dist/node_modules/@fortawesome/fontawesome-free/js && rm -r dist/node_modules/@fortawesome/fontawesome-free/less && rm -r dist/node_modules/@fortawesome/fontawesome-free/metadata && rm -r dist/node_modules/@fortawesome/fontawesome-free/scss && rm -r dist/node_modules/@fortawesome/fontawesome-free/svgs && rm -r dist/node_modules/@ibm/plex/IBM-Plex-Mono && rm -r dist/node_modules/@ibm/plex/IBM-Plex-Sans && rm -r dist/node_modules/@ibm/plex/IBM-Plex-Sans-Arabic && rm -r dist/node_modules/@ibm/plex/IBM-Plex-Sans-Devanagari && rm -r dist/node_modules/@ibm/plex/IBM-Plex-Sans-Hebrew && rm -r dist/node_modules/@ibm/plex/IBM-Plex-Sans-KR && rm -r dist/node_modules/@ibm/plex/IBM-Plex-Sans-Thai && rm -r dist/node_modules/@ibm/plex/IBM-Plex-Sans-Thai-Looped && rm -r dist/node_modules/@ibm/plex/IBM-Plex-Sans-Variable && rm -r dist/node_modules/@ibm/plex/IBM-Plex-Serif && rm -r dist/node_modules/@ibm/plex/scss && rm -r dist/node_modules/bootstrap/js && rm -r dist/node_modules/bootstrap/scss && rm -r dist/node_modules/bootstrap/dist/js"
+  },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.15.1",
     "@ibm/plex": "^5.1.0",
