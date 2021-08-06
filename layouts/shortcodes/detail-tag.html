@@ -1,0 +1,7 @@
+{{ $summary := .Get 0 }} 
+{{ $content := .Inner }}
+
+<details>
+    <summary>{{$summary}}</summary>
+    <p>{{$content | markdownify }}</p>
+</details>
