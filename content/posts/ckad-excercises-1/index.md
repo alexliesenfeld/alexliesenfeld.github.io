@@ -9,6 +9,7 @@ tags = [
     "ckad",
     "certification",
 ]
+series = ["CKAD Exercises"]
 +++
 
 {{< table_of_contents "Table of Contents">}}
