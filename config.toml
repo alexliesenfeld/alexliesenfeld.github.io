@@ -12,8 +12,8 @@ enableEmoji = true
 # disqusShortname = "yourdiscussshortname"
 
 [permalinks]
-posts = "/posts/:filename/" # this will ignore the year directory
-projects = "/projects/:filename/"
+posts = "/posts/:slug/" # this will ignore the year directory
+projects = "/projects/:slug/" # this will ignore the year directory
 
 [params]
 author = "Alex Liesenfeld"
