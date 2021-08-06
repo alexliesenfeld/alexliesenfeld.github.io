@@ -13,7 +13,7 @@ enableEmoji = true
 
 [permalinks]
 posts = "/posts/:filename/" # this will ignore the year directory
-project = "/projects/:filename/"
+projects = "/projects/:filename/"
 
 [params]
 author = "Alex Liesenfeld"
@@ -100,7 +100,6 @@ prefetchsrc = ["'self'"]
 connectsrc = ["'self'"] #connectsrc = ["'self'", "https://www.google-analytics.com"]
 
 [taxonomies]
-series = "series"
 tag = "tags"
 project = "projects"
 
