@@ -13,7 +13,7 @@ enableEmoji = true
 
 [permalinks]
 posts = "/posts/:filename/" # this will ignore the year directory
-projects = "/projects/:filename/"
+project = "/projects/:filename/"
 
 [params]
 author = "Alex Liesenfeld"
@@ -102,7 +102,7 @@ connectsrc = ["'self'"] #connectsrc = ["'self'", "https://www.google-analytics.c
 [taxonomies]
 series = "series"
 tag = "tags"
-projects = "projects"
+project = "projects"
 
 [[params.social]]
 name = "Email"
