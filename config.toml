@@ -11,10 +11,6 @@ enableEmoji = true
 # Enable Disqus comments
 # disqusShortname = "yourdiscussshortname"
 
-[permalinks]
-posts = "/posts/:slug/" # this will ignore the year directory
-projects = "/projects/:slug/" # this will ignore the year directory
-
 [params]
 author = "Alex Liesenfeld"
 description = "Alex Liesenfeld's personal website"
