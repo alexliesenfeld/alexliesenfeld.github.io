@@ -13,6 +13,7 @@ enableEmoji = true
 
 [permalinks]
 posts = "/posts/:filename/" # this will ignore the year directory
+projects = "/projects/:filename/"
 
 [params]
 author = "Alex Liesenfeld"
