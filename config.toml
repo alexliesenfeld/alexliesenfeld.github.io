@@ -97,7 +97,6 @@ connectsrc = ["'self'"] #connectsrc = ["'self'", "https://www.google-analytics.c
 
 [taxonomies]
 tag = "tags"
-project = "projects"
 series = 'series'
 
 [[params.social]]

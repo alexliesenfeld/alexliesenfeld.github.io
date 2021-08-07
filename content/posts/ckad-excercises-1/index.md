@@ -2,7 +2,6 @@
 author = "Alexander Liesenfeld"
 title = "CKAD Exercises - Part 1"
 date = "2021-05-16"
-serie = "asd"
 description = "Kubernetes Certified Application Developer (CKAD) Certification Exam Exercises (2021) - Part 1"
 tags = [
     "kubernetes",
