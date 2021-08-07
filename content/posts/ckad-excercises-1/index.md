@@ -370,7 +370,7 @@ kubectl describe pod multi-container
 kubectl exec multi-container -c nginx -it -- sh
 ```
 
-Once you connected to the container, execute the following command to show the file content:
+Once you're connected to the container, execute the following command to show the file content:
 
 ```bash
 cat /usr/share/nginx/html/index.html 
