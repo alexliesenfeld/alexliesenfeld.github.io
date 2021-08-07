@@ -315,7 +315,7 @@ kubectl top nodes
 1. Create a pod that shares a volume with two containers `nginx` and `busybox`. 
 1. Mount a volume to path `/usr/share/nginx/html/` in both containers. 
 1. Let the `busybox` container write the current time into file `/usr/share/nginx/html/index.html` every 5 seconds. 
-1. Start the pod and connect to the `nginx` container and verify that the time is being updated every 5 seconds.
+1. Start the pod, connect to the `nginx` container and verify that the time is being updated every 5 seconds.
 
 > TIP: Use `kubectl exec` to connecto to a pod container. 
 
