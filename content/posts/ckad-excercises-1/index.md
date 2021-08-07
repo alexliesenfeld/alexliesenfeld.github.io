@@ -72,7 +72,7 @@ kubectl get services --all-namespaces
 
 #### Exercise 6
 
-Create a new pod named `nginx-webapp` into a namespace of your choice other than `default`. Confirm that the pod has started successfully.
+Create a new pod `nginx-webapp` in a namespace of your choice other than `default`. Confirm that the pod has started successfully.
 
 {{< detail-tag "Show Solution" >}}
 ```bash
@@ -84,7 +84,7 @@ kubectl get pod nginx-webapp --namespace mynamespace
 ## nginx-web   1/1     Running   0          2m6s
 ```
 
-NOTE: Please note that we added `--restart=Never` to make sure that only a regular pod is created. If we would omit this, a deployment would be created that would take care of spinning up our pod. See [here](https://stackoverflow.com/a/40534364) for more information.
+NOTE: Note that we added `--restart=Never` to make sure that only a pod is created. If we would omit this, a deployment would be created that would spin up our pod. See [here](https://stackoverflow.com/a/40534364) for more information.
 {{< / detail-tag >}}
 
 #### Exercise 7
@@ -100,7 +100,7 @@ kubectl create -f pod.yaml
 
 #### Exercise 8
 
-Get the pod specification for an existing pod in YAML representation.
+Get the pod specification for an existing pod in YAML format.
 
 {{< detail-tag "Show Solution" >}}
 ```bash
@@ -110,7 +110,7 @@ kubectl get pod nginx -o yaml
 
 #### Exercise 9
 
-Get the pod specification for an existing pod in JSON representation.
+Get the pod specification for an existing pod in JSON format.
 
 {{< detail-tag "Show Solution" >}}
 ```bash
@@ -120,7 +120,7 @@ kubectl get pod nginx -o json
 
 #### Exercise 10
 
-Get the details for an existing pod (such as pod status, recent events,  related resources, etc.).
+Get the details for an existing pod (such as pod status, recent events, related resources, etc.).
 
 {{< detail-tag "Show Solution" >}}
 ```bash
@@ -140,7 +140,7 @@ kubectl delete pod nginx
 
 #### Exercise 12
 
-Create a `busybox` pod that executes the shell command `sleep 3600`.
+Create a pod `busybox` that executes the shell command `sleep 3600` and then stops.
 
 {{< detail-tag "Show Solution" >}}
 ```bash
@@ -150,7 +150,8 @@ kubectl run busybox --image=busybox --restart=Never -- sh -c "sleep 3600"
 
 #### Exercise 13
 
-Create a pod with image `busybox` that only prints 'Hi!' and then stops. Check the logs for the output.
+Create a pod with image `busybox` that only prints 'Hi!' and then stops. 
+Open the pod logs and check if there is any output.
 
 {{< detail-tag "Show Solution" >}}
 ```bash
@@ -161,7 +162,7 @@ kubectl logs my-busybox-pod
 
 #### Exercise 14
 
-Connect to a pod and print all available environment variables.
+Connect to a pod and print all environment variables.
 
 {{< detail-tag "Show Solution" >}}
 ```bash
@@ -174,14 +175,16 @@ kubectl exec nginx -it sh
 
 #### Exercise 15
 
-Create a pod `nginx` with image `nginx:1.18-alpine`. When created, change the image of the pod to `nginx:1.19-alpine`. Convince yourself that the pod has been successfully updated.
+Create a pod `nginx` with image `nginx:1.18-alpine`. When the pod was created, change its image to `nginx:1.19-alpine`. Convince yourself that the pod has been successfully updated.
 
 {{< detail-tag "Show Solution" >}}
 ```bash
+kubectl run nginx --image=nginx:1.18-alpine --restart=Never 
 kubectl set image pod/nginx nginx=nginx:1.19-alpine
 kubectl describe pod nginx
-## 1: Make sure the Image attribute has been update to nginx:1.19-alpine (see attribute "Containers" > "nginx" > "Image")
-## 2: The event log should contain information about a successful image pull and restarting of the pod.
+## 1: Inspect the output and make sure that the Image attribute has been updated to 
+## nginx:1.19-alpine (see attribute "Containers" > "nginx" > "Image")
+## 2: The event log should contain information about a successful image pull and pod restart.
 ```
 {{< / detail-tag >}}
 
@@ -194,12 +197,12 @@ Show the logs of a previously crashed pod.
 kubectl logs my-busybox-pod -p
 ```
 
-TIP: This command does not show logs for already terminated pods!
+> TIP: This command does not show logs for already terminated pods!
 {{< / detail-tag >}}
 
 #### Exercise 17
 
-Show all pod logs from the last hour. 
+Show a pods logs from the last hour. 
 
 {{< detail-tag "Show Solution" >}}
 ```bash
@@ -209,7 +212,9 @@ kubectl logs --since=1h nginx
 
 #### Exercise 18
 
-Create a pod with image `nginx` and expose it on port 80. Create another pod with image `busybox` that fetches the index HTML page of the nginx pod and prints it to standard output. Check the logs to see the HTML content.
+1. Create a pod `nginx-server` with image `nginx` and expose it on port 80. 
+1. Create another pod `nginx-checker` with image `busybox` that fetches the index HTML page from `nginx-server` and prints it to standard output. 
+1. Check the logs of `nginx-checker` to see the HTML content.
 
 {{< detail-tag "Show Solution" >}}
 ```bash
@@ -227,12 +232,12 @@ kubectl logs nginx-checker
 
 #### Exercise 19
 
-Create a multi-container pod with the name `multibox` with two busybox containers that execute the command `sleep 3600`. Check that both containers are running.
+Create a multi-container pod named `multibox` with two busybox containers that execute the command `sleep 3600`. Check that both containers are running.
 
 {{< detail-tag "Show Solution" >}}
 ```bash
-# Create a single-container pod as usual and print pipe the YAML output into a file
-kubectl run multibox --image=busybox --restart=Never --dry-run=client -o yaml -- sh -c "sleep 3600" > multicontainer.yaml
+# Create a single-container pod as usual and pipe the YAML output into a file
+kubectl run multibox --image=busybox --restart=Never --dry-run=client -o yaml -- sh -c "sleep 3600" > multi-container.yaml
 ```
 
 Add a second container to the pod specification file we just created. 
@@ -268,11 +273,10 @@ status: {}
 Create the pod:
 
 ```bash
-kubectl create -f multicontainer.yaml
+kubectl create -f multi-container.yaml
 kubectl get pod multibox
 # The READY column in the command output should show 2/2 containers in STATUS = Running. 
 ```
-
 {{< / detail-tag >}}
 
 #### Exercise 20
@@ -308,17 +312,22 @@ kubectl top nodes
 
 #### Exercise 23
 
-Create a pod that shares a volume with two containers `nginx` and `busybox`. Mount the volume to path `/usr/share/nginx/html/` in both containers. The `busybox` container must write the current time into file `/usr/share/nginx/html/index.html` every 5 seconds. Once the pod is started, exec into the `nginx` container and verify that the time is being updated every 5 seconds.
+1. Create a pod that shares a volume with two containers `nginx` and `busybox`. 
+1. Mount a volume to path `/usr/share/nginx/html/` in both containers. 
+1. Let the `busybox` container write the current time into file `/usr/share/nginx/html/index.html` every 5 seconds. 
+1. Start the pod and connect to the `nginx` container and verify that the time is being updated every 5 seconds.
 
-TIP: To write the current time into the file, use the shell command `sh -c "while true; do $(date) > /usr/share/nginx/html/index.html; sleep 5; done`
+> TIP: Use `kubectl exec` to connecto to a pod container. 
+
+> TIP: To write the current time into the file, use the shell command `sh -c "while true; do $(date) > /usr/share/nginx/html/index.html; sleep 5; done`
 
 {{< detail-tag "Show Solution" >}}
 
 ```bash
-kubectl run multicontainer --image=nginx --restart=Never --dry-run=client -o yaml > multicontainer.yaml
+kubectl run multi-container --image=nginx --restart=Never --dry-run=client -o yaml > multi-container.yaml
 ```
 
-Add the second container to `multicontainer.yaml` we just created:
+Add the second container to the `multi-container.yaml` file we just created:
 
 ```yaml
 apiVersion: v1
@@ -326,8 +335,8 @@ kind: Pod
 metadata:
   creationTimestamp: null
   labels:
-    run: multicontainer
-  name: multicontainer
+    run: multi-container
+  name: multi-container
 spec:
   volumes:
   - name: html-volume
@@ -355,13 +364,13 @@ status: {}
 ```
 
 ```bash
-# verify the pod started successfully
-kubectl describe pod multicontainer 
-# Exec into the "nginx" container of the "multicontainer" pod 
-kubectl exec multicontainer -c nginx -it -- sh
+# Verify that the pod started successfully.
+kubectl describe pod multi-container 
+# Exec into the "nginx" container of the "multi-container" pod .
+kubectl exec multi-container -c nginx -it -- sh
 ```
 
-Once in the container, execute the following command to show the file content:
+Once you connected to the container, execute the following command to show the file content:
 
 ```bash
 cat /usr/share/nginx/html/index.html 
