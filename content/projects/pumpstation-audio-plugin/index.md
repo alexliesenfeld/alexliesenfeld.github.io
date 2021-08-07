@@ -11,7 +11,7 @@ tags = [
 +++
 
 
-I am happy to announce my latest audio software project [*PumpStation*](https://www.pumpstation-plugin.com). It is an audio effect plug-in that you can add any modern [DAW](https://en.wikipedia.org/wiki/Digital_audio_workstation), such as [Ableton Live](https://www.ableton.com/de/live/) or [Logic Pro](https://www.apple.com/de/logic-pro/). It lets you draw volume modulation curves and allows you to easily create interesting audio effects, such as simulated [sidechain compression](https://youtu.be/OqJ3oTSsNIk?t=129), [tremolo](https://youtu.be/oOCNB1izw8A?t=43), ducking, [gating, or stutter effects](https://youtu.be/g7WR9sPLJ_Y?t=287), and much more. 
+I am happy to announce my latest audio software project [*PumpStation*](https://www.pumpstation-plugin.com). It is an audio effect plug-in that you can add to any modern [DAW](https://en.wikipedia.org/wiki/Digital_audio_workstation), such as [Ableton Live](https://www.ableton.com/de/live/) or [Logic Pro](https://www.apple.com/de/logic-pro/). It lets you draw volume modulation curves and allows you to easily create interesting audio effects, such as simulated [sidechain compression](https://youtu.be/OqJ3oTSsNIk?t=129), [tremolo](https://youtu.be/oOCNB1izw8A?t=43), ducking, [gating, or stutter effects](https://youtu.be/g7WR9sPLJ_Y?t=287), and much more. 
 
 {{< figure src="./screenshot.png" caption="PumpStation Audio Plugin GUI." width="600px">}}
 
