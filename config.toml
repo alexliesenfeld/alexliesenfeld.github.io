@@ -111,11 +111,11 @@ icon = "fa fa-github"
 weight = 2
 url = "https://github.com/alexliesenfeld"
 
-[[params.social]]
-name = "Twitter"
-icon = "fa fa-twitter"
-weight = 3
-url = "https://twitter.com/alexliesenfeld/"
+# [[params.social]]
+# name = "Twitter"
+# icon = "fa fa-twitter"
+# weight = 3
+# url = "https://twitter.com/alexliesenfeld/"
 
 [[params.social]]
 name = "LinkedIn"
