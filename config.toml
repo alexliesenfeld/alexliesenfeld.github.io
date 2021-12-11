@@ -103,7 +103,7 @@ series = 'series'
 name = "Email"
 icon = "fa fa-envelope"
 weight = 1
-url = "mailto:mail@alexliesenfeld.com"
+url = "mailto:alex@alexliesenfeld.com"
 
 [[params.social]]
 name = "Github"
