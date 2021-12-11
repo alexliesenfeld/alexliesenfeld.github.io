@@ -2,7 +2,7 @@
 author = "Alexander Liesenfeld"
 title = "PumpStation Audio Plugin"
 date = "2019-03-05"
-description = "PumpStation Audio Plugin"
+description = "Introducing PumpStation Audio Plugin"
 tags = [
     "audio plugin",
     "vst",
