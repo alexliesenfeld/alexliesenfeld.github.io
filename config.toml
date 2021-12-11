@@ -15,7 +15,7 @@ enableEmoji = true
 author = "Alex Liesenfeld"
 description = "Alex Liesenfeld's personal website"
 keywords = "blog,developer,personal"
-info = ["Senior Software Engineer"]
+# info = ["Senior Software Engineer"]
 avatarURL = "images/avatar.jpeg"
 #gravatar = "john.doe@example.com"
 #footerContent = "Enter a text here."
@@ -146,14 +146,14 @@ languageName = ":uk:"
 #url = "about/"
 
 [[languages.en.menu.main]]
-name = "Blog"
+name = "Posts"
 weight = 2
 url = "posts/"
 
-[[languages.en.menu.main]]
-name = "Projects"
-weight = 3
-url = "projects/"
+#[[languages.en.menu.main]]
+#name = "Projects"
+#weight = 3
+#url = "projects/"
 
 #[[languages.en.menu.main]]
 #name = "Contact me"
