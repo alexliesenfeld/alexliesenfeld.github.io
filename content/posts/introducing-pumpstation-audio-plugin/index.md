@@ -1,6 +1,6 @@
 +++
 author = "Alexander Liesenfeld"
-title = "PumpStation Audio Plugin"
+title = "Introducing PumpStation Audio Plugin"
 date = "2019-03-05"
 description = "Introducing PumpStation Audio Plugin"
 tags = [
