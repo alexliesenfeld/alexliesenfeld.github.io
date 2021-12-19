@@ -11,41 +11,39 @@ tags = [
 ]
 +++
 
-HTTP mocking libraries allow you to simulate HTTP responses so you can easier test code that depends on third-party APIs. This article shows how you can use [httpmock](https://github.com/alexliesenfeld/httpmock) to do this in Rust.
+At some point, most developers needed to test applications that interact with external HTTP services, such as third-party APIs, authentication providers, or data sources. These services are not always available to us, especially during automated tests or when prototyping a new service. To verify that our applications use these APIs as expected, we need tools that allow us to verify outgoing requests and to mimic API responses tailored to our use cases and test scenarios. This is where mocking libraries can help.
 
-# Why HTTP-Mocking?
-At some point, every developer had the need to test calls to external APIs. This is especially important in (micro)service-oriented environments where services typically require access to several external dependencies, such as APIs, authentication providers, data sources, etc. These services are not always available to you. This is where mocking/stubbing tools can fill the gaps.
+HTTP mocking libraries usually allow you to create an HTTP server and to configure it for custom request/response scenarios. While most libraries provide functionality to mock HTTP servers in automated tests, some also give you the possibility to run a configurable standalone server application that mimics APIs for multiple applications at once. This article shows how we can use such tools to mock third-party APIs in Rust.
 
-HTTP mocking libraries usually provide you a simple HTTP server and tools to configure it for custom request/response scenarios. We will see examples of such scenarios in the following sections.
+## The App
+Let's suppose we are building a Rust app that will create a GitHub repository on our behalf. To perform these operations we will use the GitHub REST API. We will then write some automated tests to verify correct behaviour by simulating HTTP responses from GitHub.
 
-# The App
-Let's suppose we are building a Rust app that will create a Github repository on our behalf. To perform these operations, we will use the Github REST API. We will then write some automated tests to verify correct behavior by simulating HTTP responses using `httpmock`.
-
-## Let's start!
+### Let's start!
 Let's first create a new cargo package for our app and name it `github_api_client`:
 ```sh
 cargo new github_api_client --bin
 ```
 
-We'll also need some libraries, so let's add them to Cargo.toml. We'll use 
+We'll also need some libraries, so let's add them to our dependency list. We'll use 
 - `isahc` as our HTTP client library,
 - `serde_json` for easy JSON serialization and deserialization, and 
-- `custom_error` to create custom error types easily.
+- `custom_error` to create custom error types.
 
-Cargo.toml:
+`Cargo.toml`:
 ```toml
 [dependencies]
-isahc = { version = "0.9.8", features = ["json"] }
+isahc = { version = "1.6", features = ["json"]}
 serde_json = "1.0"
-anyhow = "1.0.34"
+anyhow = "1.0"
 ```
 
-## The Client
+### The Client
 
-Now let's write some code that will allow us to access the Github REST API. We will create a structure named `GithubClient` that will contain all the logic required to access the Github API.
+Now let's add the following code that will allow us to access the GitHub REST API. We will create a structure named `GithubClient` that will contain all the logic required to access the GitHub API.
 
+`main.rs`:
 ```rust
-use isahc::{RequestExt, ResponseExt, prelude::Request};
+use isahc::{ReadResponseExt, Request, RequestExt};
 use serde_json::{json, Value};
 use anyhow::{Result,ensure};
 
@@ -82,19 +80,22 @@ fn main() {
 }
 ```
 
-The only method our client provides is `create_repo`. It takes the repository name as an argument and returns a `Result` containing the repository URL as a string value. To keep this example simple, we use the `anyhow` crate for generic error handling.
+The only method our client provides for now is `create_repo`. It takes the repository name as an argument and returns a `Result` containing the repository URL as a string value. To keep this example simple, we use the `anyhow` crate for generic error handling.
 
-## The Problem
+### The Problem
 
-Now that we have a functional app, we need to write some tests to make sure it doesn’t have any obvious errors.
+Now that we have a functional app, we want to write some tests to make sure it doesn't have any obvious problems.
 
-The tricky part is to find a good target for mocking so we can test the client behavior in different scenarios. In our case, the HTTP client (such as the `Request::post` method in our client implementation) looks like a good place to start.
+One tricky part is to find a suitable target for mocking so that we can test the behaviour of our client in different situations. In our case, the HTTP clients `Request::post` function looks like a good place to start, because it's the last function that our GitHub client calls before it sends a request to the GitHub API servers.
 
-Unfortunately, mocking HTTP clients is very tedious. This is because in a larger application we would need to reimplement a big chunk of the HTTP clients API to be able to simulate request/response scenarios. So what to do?
+Unfortunately, mocking HTTP clients is not very practical if there is no dedicated mocking library for your particular HTTP client. This is because in a larger application, we would need to reimplement a big chunk of the HTTP clients API to be able to adequately simulate request/response scenarios. So what to do?
 
-## The Solution
+### The Solution
 
-To test our Github API client conveniently, we can use an HTTP mocking library. Such libraries can help us verify that HTTP requests sent by our client are correct and allow us to simulate HTTP responses from the Github API.
+To test our GitHub API client conveniently, we can use an HTTP mocking library. Such libraries can help us with at least two testing targets:
+
+- Verifying that all HTTP requests our client sends are correct (i.e., contain all expected values). 
+- Simulating HTTP responses from the GitHub API to see if our client can deal with them accordingly.
 
 At the time of writing there are 4 noteworthy Rust libraries that can help us with this:
 
@@ -112,77 +113,84 @@ The following comparison matrix shows how the libraries compare to each other:
 | httptest    | parallel   | yes             | ∞     | yes      | no        | no              
 | wiremock | parallel   | yes             | ∞     | no       | yes       | no              
 
-According to the comparison matrix the most complete package is currently provided by httpmock. For this reason, we will use this one for the rest of this article (and also because I am the developer 😜).
+According to the comparison matrix, the most complete package is currently provided by `httpmock`. For this reason, we will use this one for the rest of this article (and because the author is the creator of `httpmock` 😛). Although we will use `httpmock`, you can also find most of the presented features in any of the other libraries as well.
 
-# Creating Mocks
+## Creating Mocks
 
-In this section, we'll write some tests to verify our Github API client works as expected. Let’s first add the `httpmock` crate to our Cargo.toml:
+In this section, we'll write some tests to verify that our GitHub API client works as expected. Let’s first add the `httpmock` crate to our dependencies:
+
+`Cargo.toml`:
 ```rust
 [dev-dependencies]
-httpmock = "0.5"
+httpmock = "0.6"
 ```
 
-Now we’re all set. Let’s create a test that will make sure “the good path” in our client implementation works as expected:
+Now we’re all set. Let’s create a test that will make sure the "good path" in our client implementation works as expected:
 
-{{< highlight rust "linenos=table" >}}
-#[cfg(test)]
-mod tests {
-    use crate::GithubClient;
-    use httpmock::MockServer;
-    use serde_json::json;
-
-    #[test]
-    fn create_repo_success_test() {
-        // Arrange
-        let server = MockServer::start();
-        let mock = server.mock(|when, then| {
-            when.method("POST")
-                .path("/user/repos")
-                .header("Authorization", "token TOKEN")
-                .header("Content-Type", "application/json");
-            then.status(201)
-                .json_body(json!({ "html_url": "http://example.com" }));
-        });
-        let client = GithubClient::new("TOKEN", &server.base_url());
-
-        // Act
-        let result = client.create_repo("myRepo");
-
-        // Assert
-        mock.assert();
-        assert_eq!(result.is_ok(), true);
-        assert_eq!(result.unwrap(), "http://example.com");
-    }
-}
-{{< / highlight >}}
-
-To easier grasp what this test does, we arranged it following the [AAA (Arrange-Act-Assert) pattern](https://medium.com/@pjbgf/title-testing-code-ocd-and-the-aaa-pattern-df453975ab80) (look at the comments).
-
-#### Arrange
-
-The first step in our test function is to create a `MockServer` instance (line 10). Next, we create a `Mock` object on the `MockServer` with all our request and response requirements (lines 11–18). 
-
-Notice how we used the `when` variable to define HTTP request requirements (lines 12-15). We used the `then` variable to define what data the corresponding HTTP response will contain (lines 16–17). 
-
-The mock server will only respond as we specified if it receives an HTTP request that meets all the request criteria from the `when` part. Otherwise, it will respond with an error message and HTTP status code `404`.
-
-*Important*: Observe how we set the base URL in our client to point to the mock server instead of the real Github API (line 19).
-
-#### Act
-
-Next, we trigger the method that is under test (line 22) which is the method `create_repo` from our `GithubClient` structure.
-
-#### Assert
-
-At last, we use the `assert` method provided by the mock object (line 25). This method makes sure that the mock server received exactly one HTTP request that matched all the mock requirements. If not, it will fail the test with a detailed problem description (see next section).
-
-## Verification
-
-`Mock` objects provide an `assert` method which ensures our app did actually send a request to the mock server and that it matched the mock spec (the `when` part). If not, this method will fail the test. In this case `httpmock` will try to find a request in its request journal that is most similar to the mock spec. It will then identify the differences between the two so you can easily spot unexpected values. 
-
-To demonstrate this feature, we will modify our client to send `text/plain` in the `content-type` header. If we rerun the test, we'll see that this change is detected and the test fails now with the following message:
-
+`main.rs`:
+```rust
+// ...
+1  #[cfg(test)]
+2  mod tests {
+3      use crate::GithubClient;
+4      use httpmock::MockServer;
+5      use serde_json::json;
+6  
+7      #[test]
+8      fn create_repo_success_test() {
+9          // Arrange
+10         let server = MockServer::start();
+11         let mock = server.mock(|when, then| {
+12             when.method("POST")
+13                 .path("/user/repos")
+14                 .header("Authorization", "token TOKEN")
+15                 .header("Content-Type", "application/json");
+16             then.status(201)
+17                 .json_body(json!({ "html_url": "http://example.com" }));
+18         });
+19         let client = GithubClient::new("TOKEN", &server.base_url());
+20 
+21         // Act
+22         let result = client.create_repo("myRepo");
+23 
+24         // Assert
+25         mock.assert();
+26         assert_eq!(result.is_ok(), true);
+27         assert_eq!(result.unwrap(), "http://example.com");
+28     }
+39 }
 ```
+
+We arranged the test code following the [AAA (Arrange-Act-Assert) pattern](https://medium.com/@pjbgf/title-testing-code-ocd-and-the-aaa-pattern-df453975ab80), which divides the test into three parts: Arrange, Act, and Assert.
+
+### Arrange
+
+The first thing we do in our test is to create a `MockServer` instance (line `10`) which we then use to create a `Mock` object with 
+
+1. all values that the `MockServer` should expect from an incoming HTTP request (lines `12`–`15`), and 
+2. a specification for HTTP responses that will be sent back should any incoming HTTP request match all expected values (lines `16`–`17`).   
+
+Notice how we used the `when` variable to define request expectations and the `then` variable to specify response values. 
+
+The mock server will only respond if it receives an HTTP request that meets all expectations. Otherwise, it will respond with an error message and HTTP status code `404`.
+
+*Important*: Observe how we set the base URL in our client to point to the mock server instead of the real GitHub API (line `19`).
+
+### Act
+
+In this part we execute our code under test (line `22`) which is the method `create_repo` of our `GithubClient`.
+
+### Assert
+
+At last, we use the `assert` method provided by the `Mock` object (line `25`). This method makes sure that the mock server received exactly one HTTP request that matched all expectations. If not, it will fail the test and print a detailed problem description (see next section).
+
+## Debugging
+
+`Mock` objects provide an `assert` method which ensures that our application sent a request to the mock server that matched all expectations (the `when`). If not, this method will fail the test. In this case, `httpmock` will try to find a request in its request journal that is most similar to your mock expectations. It will then identify the differences between the two, so you can easily spot incorrect or missing values. 
+
+To demonstrate this feature, we will modify our client to send `text/plain` in the `content-type` header instead of `application/json`. If we then rerun the test, we'll see that this change is detected, and the test fails now with the following message:
+
+```console
 At least one request has been received, but none exactly matched the mock specification.
 Here is a comparison with the most similar request (request number 1): 
 1 : Expected header with name 'Content-Type' and value 'application/json' to be present in the request but it wasn't.
@@ -191,13 +199,26 @@ Expected:                [key=equals, value=equals]   Content-Type=application/j
 Actual (closest match):                               content-type=text/plain
 ```
 
-Depending on the IDE you are using, you will also be able to see the differences between the expected and actual value in a differences viewer. For example, this is how it would look like in IntelliJ or CLion:
+Depending on the IDE you're using, you will also be able to see the differences between the expected and the actual value in a differences viewer. For example, this is how it would look like in IntelliJ or CLion:
 
-{{< figure src="./intellij.jpeg" caption="Differences viewer in IntelliJ or CLion." width="600px">}}
+![Differences Viewer in IntelliJ and/or CLion.](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/s3fhoq213ooemcglyirq.jpeg)
 
+## Standalone Mock Servers
 
-# Conclusion
+Until now we only looked at how we can mock external HTTP services in automated integration tests. Some end-to-end tests, however, may involve multiple applications which need access to HTTP services. These may not be easily available for tests (e.g., because they are not in your ownership). 
 
-This article showed how `httpmock` can be used to test HTTP-based API clients in Rust. On one hand, it allowed us to verify that our app is sending HTTP requests which contain all the required information. On the other hand, we could simulate HTTP responses to see if our app behaves as expected.
+Especially in early development stages or during prototyping, chances are that some services are still under development and not yet ready for usage. In this case, it may be practical to have a dedicated mock server running in a separate process that provides mocked APIs for multiple applications. One benefit of this approach is that a test driver application could configure the mock server to respond to requests depending on the current test scenario. 
+
+![Usage of a standalone mock server in end-to-end tests.](standalone-mock-server-e2e.drawio.png)
+
+Some mocking libraries come with an optional standalone mock server, for some others there are third-party exentions. For example, `httpmock` comes with a separate [Docker image](https://hub.docker.com/r/alexliesenfeld/httpmock) that lets you run a dedicated mock server that can be used in the following ways: 
+
+* *Rust Test Driver*: The test executor is a Rust test that uses `httpmock` the same way as presented in our examples above, with the only difference that it connects to a remote mock server (e.g., by using [`MockServer::connect("localhost:5000")`](https://docs.rs/httpmock/0.6.4/httpmock/struct.MockServer.html#method.connect)) rather than creating a local mock server instance (e.g., using [`MockServer::start()`](https://docs.rs/httpmock/0.6.4/httpmock/struct.MockServer.html#method.start)).
+* *Static YAML File Configuration*: Allows you to configure the mock server by reading from a directory of YAML mock definition files (similar to Rust API, see example [here](https://github.com/alexliesenfeld/httpmock/blob/master/tests/resources/static_yaml_mock.yaml)).
+
+## Conclusion
+
+This article showed how `httpmock` can be used to test HTTP-based API clients in Rust. It allowed us to verify that our application was sending HTTP requests that matched our expectations. We could simulate HTTP responses from the GitHub API using `httpmock` to make sure that our app can process them as accordingly.
+
 
 You can find the source code from this article [on Github](https://github.com/alexliesenfeld/blog-rust-http-testing-with-httpmock).
