@@ -1,5 +1,5 @@
 baseURL = "https://www.alexliesenfeld.com/"
-title = "Alex Liesenfeld"
+title = "Alexander Liesenfeld"
 theme = "hugo-coder"
 languageCode = "en"
 defaultContentLanguage = "en"
@@ -12,8 +12,8 @@ enableEmoji = true
 # disqusShortname = "yourdiscussshortname"
 
 [params]
-author = "Alex Liesenfeld"
-description = "Alex Liesenfeld's personal website"
+author = "Alexander Liesenfeld"
+description = "Alexander Liesenfeld's personal website"
 keywords = "blog,developer,personal"
 # info = ["Senior Software Engineer"]
 avatarURL = "images/avatar.jpeg"
@@ -111,11 +111,11 @@ icon = "fa fa-github"
 weight = 2
 url = "https://github.com/alexliesenfeld"
 
-[[params.social]]
-name = "Twitter"
-icon = "fa fa-twitter"
-weight = 3
-url = "https://twitter.com/alexliesenfeld/"
+# [[params.social]]
+# name = "Twitter"
+# icon = "fa fa-twitter"
+# weight = 3
+# url = "https://twitter.com/alexliesenfeld/"
 
 [[params.social]]
 name = "LinkedIn"
