@@ -129,13 +129,13 @@ url = "https://www.linkedin.com/in/alexander-liesenfeld/"
 #weight = 5
 #url = "https://soundcloud.com/alexliesenfeld"
 
-[[params.social]]
-name = "RSS"
-icon = "fa fa-rss"
-weight = 6
-url = "/index.xml"
-rel = "alternate"
-type = "application/rss+xml"
+#[[params.social]]
+#name = "RSS"
+#icon = "fa fa-rss"
+#weight = 6
+#url = "/index.xml"
+#rel = "alternate"
+#type = "application/rss+xml"
 
 [languages.en]
 languageName = ":uk:"
